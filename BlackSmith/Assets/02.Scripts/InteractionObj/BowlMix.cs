@@ -28,44 +28,44 @@ public class BowlMix : MonoBehaviour
     }
     private void Update()
     {
-        if (scroll != null)//조합서유무로 조합
+        if (scroll == null)
+            return;
+
+        //시작버튼을 누르면 ㅣㅅ작한다           
+        if (start && oneTime == 0)
         {
-            //시작버튼을 누르면 ㅣㅅ작한다           
-            if (start && oneTime == 0)
+            StartCoroutine(ShakeAni());
+            oneTime++;
+            for (int i = 0; i < scroll.itemRicipe.Length; i++)
             {
-                StartCoroutine(ShakeAni());
-                oneTime++;
-                for (int i = 0; i < scroll.itemRicipe.Length; i++)
-                {                    
-                    for (int j = 0; j < selectlitem.Count; j++)
-                    {                        
-                        if (scroll.itemRicipe[i] == selectlitem[j].item.itemName)
+                for (int j = 0; j < selectlitem.Count; j++)
+                {
+                    if (scroll.itemRicipe[i] == selectlitem[j].item.itemName)
+                    {
+                        Destroy(selectlitem[j].gameObject);
+                        selectlitem.RemoveAt(j);
+                        if (selectlitem.Count <= 0)
                         {
-                            Destroy(selectlitem[j].gameObject);
-                            selectlitem.RemoveAt(j);
-                            if (selectlitem.Count <= 0)
-                            {
-                                print("asd");
-                                GameObject finObject = Instantiate(scroll.mixPrefab, spawnPos.position, Quaternion.identity);
-                                finObject.GetComponent<Rigidbody>().AddForce(Vector3.forward * 3 + Vector3.up * 3, ForceMode.Impulse);
-                                Destroy(scroll.gameObject);
-                                shakeTime = 0.3f;//흔들리는 시간 초기값으로 변경
-                                transform.position = initialPostion;//흔들림 멈춤
-                            }
+                            print("asd");
+                            GameObject finObject = Instantiate(scroll.mixPrefab, spawnPos.position, Quaternion.identity);
+                            finObject.GetComponent<Rigidbody>().AddForce(Vector3.forward * 3 + Vector3.up * 3, ForceMode.Impulse);
+                            Destroy(scroll.gameObject);
+                            shakeTime = 0.3f;//흔들리는 시간 초기값으로 변경
+                            transform.position = initialPostion;//흔들림 멈춤
+                            break;
                         }
                     }
                 }
-                for (int i = 0; i < selectlitem.Count; i++)//만든후 리스트삭제
-                {
-                    selectlitem.RemoveAt(i);
-                }
+            }
+            selectlitem.RemoveAll(t => t.gameObject);
 
-            }          
-            //스크롤의 배열과 리스트의 요소를 하나씩 비교해서 같으면 빼고 다빠져서 리스트의 길이가 0이되면 다삭제하고 최종 결과물을 만들어낸다
-        }        
+
+        }
+        //스크롤의 배열과 리스트의 요소를 하나씩 비교해서 같으면 빼고 다빠져서 리스트의 길이가 0이되면 다삭제하고 최종 결과물을 만들어낸다
+
 
         //변수 초기화
-        oneTime = 0;        
+        oneTime = 0;
         start = false;
     }
 

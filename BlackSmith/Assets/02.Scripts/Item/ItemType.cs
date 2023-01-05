@@ -13,4 +13,5 @@ public class ItemType : ScriptableObject
     public int num; //개수
     public Sprite itemImage; //아이템 이미지
     public GameObject prefab; //아이템 프리펩    
+    public int price;
 }

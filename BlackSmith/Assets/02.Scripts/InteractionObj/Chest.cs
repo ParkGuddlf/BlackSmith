@@ -36,13 +36,14 @@ public class Chest : MonoBehaviour
             int bagSoltNum = 0;
             ItemType itemType = other.GetComponent<ItemPickUp>().item;
 
+            Bag[] _childList = inventory.transform.GetComponentsInChildren<Bag>();
             //장비중복검색을 하고 참거짓을 보내준다
             for (int i = 0; i < inventory.transform.childCount; i++)
             {
                 switch (itemType.type)
                 {
                     case ItemType.Type.equip:
-                        if (inventory.transform.GetChild(i).GetComponent<Bag>().item == itemType)
+                        if (_childList[i].item == itemType)
                         {
                             hitSameBag = true;
                             print("sss");
@@ -54,19 +55,18 @@ public class Chest : MonoBehaviour
                         break;
                 }
             }
-
             for (int i = 0; i < inventory.transform.childCount; i++)
             {
-                if (inventory.transform.GetChild(i).GetComponent<Bag>().item != null && itemType.itemName == inventory.transform.GetChild(i).GetComponent<Bag>().item.itemName && !hitSameBag)//같은 아이템 있는지 검사
+                if (_childList[i].item != null && itemType.itemName == inventory.transform.GetChild(i).GetComponent<Bag>().item.itemName && !hitSameBag)//같은 아이템 있는지 검사
                 {                                                                                                                                                                             //1번칸에 아이템갯수가 5개면 다음 칸으로 옮긴다 중복되는 장비가 있으면 다음칸으로 옮긴다
-                    inventory.transform.GetChild(i).GetComponent<Bag>().count += itemType.num;//장비를 중복해서 인벤토리에 못넣는다
+                    _childList[i].count += itemType.num;//장비를 중복해서 인벤토리에 못넣는다
                     bagSoltNum = i;
                     break;
                 }
-                else if (inventory.transform.GetChild(i).GetComponent<Bag>().item == null)//없으면 가장낮은 널에 집어넣는다
+                else if (_childList[i].item == null)//없으면 가장낮은 널에 집어넣는다
                 {
-                    inventory.transform.GetChild(i).GetComponent<Bag>().item = itemType;
-                    inventory.transform.GetChild(i).GetComponent<Bag>().count += itemType.num;
+                    _childList[i].item = itemType;
+                    _childList[i].count += itemType.num;
                     break;
                 }
             }
@@ -77,37 +77,27 @@ public class Chest : MonoBehaviour
         }
 
     }
-    int k = 0;
+    int totalPrice = 0;
     void SellPrice()
-    {    
+    {
+        //물건 자체에 가격을 정해서 넣어서 개수에 가격을 곱해주기 Sellitem(Bag(가방정보))
+        Bag[] _childList = inventory.transform.GetComponentsInChildren<Bag>();
         for (int i = 0; i < inventory.transform.childCount; i++)
         {
-            if (inventory.transform.GetChild(i).GetComponent<Bag>().item != null)
+            if (_childList[i].item != null)
             {
-                switch (inventory.transform.GetChild(i).GetComponent<Bag>().item.itemName)
-                {
-                    case "Wood":
-                        k += inventory.transform.GetChild(i).GetComponent<Bag>().count * 20;
-                        break;
-                    case "stone":
-                        k += inventory.transform.GetChild(i).GetComponent<Bag>().count * 20;
-                        break;
-                    case "Axe":
-                        k += inventory.transform.GetChild(i).GetComponent<Bag>().count * 50;
-                        break;
-                    case "Pickax":
-                        k += inventory.transform.GetChild(i).GetComponent<Bag>().count * 50;
-                        break;
-                    case "Hammer":
-                        k += inventory.transform.GetChild(i).GetComponent<Bag>().count * 50;
-                        break;
-                }
+                ItemSellPrice(_childList[i]);
             }
-            inventory.transform.GetChild(i).GetComponent<Bag>().count = 0;
+            totalPrice += _childList[i].count = 0;
         }
-        print(k);
-        gm.money += k;
-        k = 0;
+        print(totalPrice);
+        gm.money += totalPrice;
+        totalPrice = 0;
+    }
+    //아이템 판매
+    void ItemSellPrice(Bag _bagitem)
+    {
+        totalPrice += _bagitem.count * _bagitem.item.price;
     }
     //판매버튼으로 물건 팔기
     public void SellBut()

@@ -25,31 +25,28 @@ public class Skybox_material : MonoBehaviour
             timer += Time.deltaTime;
             if (timer < 120 && currentDay == "Night")//시간에 따라 밝기 하늘변경
             {
-                i = 0;
+                ChangeSkyMaterial(0, new Vector3(50, -30, 0));
                 currentDay = "Day";
                 BGM.SetActive(false);
                 BGM.SetActive(true);
+                Debug.Log(0);
             }
             else if (timer > 120 && currentDay == "Day")
             {
-                i = 1;
+                ChangeSkyMaterial(1, new Vector3(0, -30, 0));
                 currentDay = "Night";
                 BGM.SetActive(false);
                 BGM.SetActive(true);
-            }
-            switch (i)
-            {
-                case 0:
-                    skybox.material = skyMaterial[i];
-                    light_Transform.eulerAngles = new Vector3(50, -30, 0);
-                    break;
-                case 1:
-                    skybox.material = skyMaterial[i];
-                    light_Transform.eulerAngles = new Vector3(0, -30, 0);
-                    break;
+                Debug.Log(1);
+
             }
 
         }
 
+    }
+    void ChangeSkyMaterial(int i , Vector3 lightAngle)
+    {
+        skybox.material = skyMaterial[i];
+        light_Transform.eulerAngles = lightAngle;
     }
 }
