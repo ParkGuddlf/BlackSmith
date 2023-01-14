@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Mine_Cut_Object : MonoBehaviour
@@ -11,7 +12,7 @@ public class Mine_Cut_Object : MonoBehaviour
     [SerializeField] string objectSys; //오브젝트방식
     int dirNum;// 방향결정
     Vector3 prefabVec; // 프리팹튀어나오는 방향
-    int hp; // 오브젝트 체력으로 횟수제한
+    [SerializeField] int hp; // 오브젝트 체력으로 횟수제한
     int spawnNum;
     Animator anim;
 
@@ -28,7 +29,7 @@ public class Mine_Cut_Object : MonoBehaviour
         switch (objectSys)
         {
             case "spawnOther":
-                hp = 5;
+                hp = 4;
                 break;
             case "break":
                 if (gameObject.tag == "Wood")
@@ -41,36 +42,43 @@ public class Mine_Cut_Object : MonoBehaviour
     private void Update()
     {
         if (hp == 0)
-        {           
+        {
             switch (objectSys)
             {
                 case "spawnOther":
-                    if (spawnNum < 1)
-                    {                        
-                        Instantiate(lowLevel, transform.position, Quaternion.identity) ;
-                        spawnNum++;
-                    }
-                    else if (spawnNum > 0)
-                    {
-                        
+                        Instantiate(lowLevel, transform.position, Quaternion.identity);
                         Destroy(gameObject);
-                    }
+                   
                     break;
                 case "break":
                     Destroy(gameObject);
                     break;
             }
-            
+
         }
         Animation();
-       
+
     }
+
+    bool[] list_IsSpown = new bool[] { false, false, false, false };
+
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == tagName)//도끼로 찍을때
         {
             audioSource.Play();
-            dirNum = Random.Range(0, 4);//랜덤 4방향
+
+            if (list_IsSpown.Where(n => n == true).LongCount() >= list_IsSpown.Length)
+                return;
+            for (int i = 0; i < list_IsSpown.Length; i++)
+            {
+                if (list_IsSpown[i] == false)
+                {
+                    list_IsSpown[i] = true;
+                    dirNum = i;
+                    break;
+                }
+            }
             print(other.name);
             other.GetComponent<BoxCollider>().enabled = false;
             StartCoroutine(ShakeAni());
